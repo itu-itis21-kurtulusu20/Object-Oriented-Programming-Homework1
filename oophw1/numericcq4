@@ -1,0 +1,78 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def linear_regression(x, y):
+    n = len(x)
+    x_mean = sum(x) / n
+    y_mean = sum(y) / n
+    x_diff = [xi - x_mean for xi in x]
+    y_diff = [yi - y_mean for yi in y]
+    xy_diff = [xi * yi for xi, yi in zip(x_diff, y_diff)]
+    x_squared_diff = [xi**2 for xi in x_diff]
+
+    b = sum(xy_diff) / sum(x_squared_diff)
+    a = y_mean - b * x_mean
+
+    return a, b
+
+def polynomial_regression(x, y):
+    n = len(x)
+    x_squared = [xi**2 for xi in x]
+    xy = [xi * yi for xi, yi in zip(x, y)]
+    x_cubed = [xi**3 for xi in x]
+    x_squared_y = [xi**2 * yi for xi, yi in zip(x, y)]
+
+    A = [[xi**2, xi, 1] for xi in x]
+    coefficients = np.linalg.solve(A, y)
+
+    c = coefficients[0]
+    d = coefficients[1]
+    e = coefficients[2]
+
+    return c, d, e
+
+def logarithmic_regression(x, y):
+    n = len(x)
+    x_log = [np.log(xi) for xi in x]
+    A = [[xi_log, 1] for xi_log in x_log]
+    coefficients = np.linalg.solve(A, y)
+
+    k = coefficients[0]
+    m = coefficients[1]
+
+    return k, m
+
+# Input x-values and y-values
+x = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5,
+              5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10 ]
+y = [0.72, 1.63, 1.88, 3.39, 4.02, 3.89, 4.25, 3.99, 4.68, 5.03,
+              5.27, 4.82, 5.67, 5.95, 5.72, 6.01, 5.5, 6.41, 5.83, 6.33]
+
+# Find coefficients using least squares linear regression
+a, b = linear_regression(x, y)
+print("Linear Regression Coefficients:")
+print("a =", a)
+print("b =", b)
+
+# Find coefficients using least squares polynomial regression
+c, d, e = polynomial_regression(x, y)
+print("Polynomial Regression Coefficients:")
+print("c =", c)
+print("d =", d)
+print("e =", e)
+
+# Find coefficients using least squares logarithmic regression
+k, m = logarithmic_regression(x, y)
+print("Logarithmic Regression Coefficients:")
+print("k =", k)
+print("m =", m)
+
+# Plot the data points and equations
+plt.scatter(x, y, color='blue', label='Data Points')
+plt.plot(x, [a + b * xi for xi in x], color='red', label='Linear Regression')
+plt.plot(x, [c * xi**2 + d * xi + e for xi in x], color='green', label='Polynomial Regression')
+plt.plot(x, [k * np.log(xi) + m for xi in x], color='purple', label='Logarithmic Regression')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.show()
